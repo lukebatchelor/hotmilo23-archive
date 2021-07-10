@@ -28,7 +28,22 @@
     "concurrently": "6.0.1",
     "create-serve": "1.0.1",
     "esbuild": "0.11.5",
+    "husky": "^7.0.1",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.3.2",
     "rimraf": "3.0.2",
     "typescript": "4.2.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn typecheck && lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,css,md,ts,tsx,json}": "prettier --write"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 120
   }
 }
