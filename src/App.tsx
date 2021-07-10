@@ -20,7 +20,13 @@ export function App() {
           <li>
             <a href="/public_html/upload/index.htm">public_html/upload/index.htm</a> - a (now non-functioning) file
             upload portal. What a fantastic Idea that was... Along with an empty <code>/a</code> directory and a
-            javascript file that was definitely designed for a different game? (<code>/otter.js</code>)
+            javascript file that was definitely designed for a different game? (<code>/otter.js</code>). If you click
+            the mislabelled "Learn More" button that's definitely just been copy pasted from a tutorial it will download
+            the php file that would have been run.
+          </li>
+          <li>
+            <a href="/public_html/ginnyplz/index.htm">public_html/ginnyplz/index.htm</a> - <strong>Warning: </strong>{' '}
+            strong strobing effect is in use. There wasn't really a point here, it was just to annoy my house mate.
           </li>
         </ul>{' '}
       </p>
