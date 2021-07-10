@@ -1,9 +1,11 @@
 {
-  "name": "react-esbuild-starter",
+  "name": "hotmilo23-archive",
   "version": "2.1.0",
-  "description": "Starter template for React + Typescript, powered by Esbuild",
-  "repository": "https://github.com/belaczek/react-esbuild-starter.git",
-  "author": "Tomas Belada <tomas@belada.net>",
+  "description": "An archive of the small microsites that lived at hotmilo23.com",
+  "repository": {
+    "url": "https://github.com/lukebatchelor/hotmilo23-archive"
+  },
+  "author": "Luke Batchelor",
   "license": "MIT",
   "keywords": [
     "react",
@@ -15,7 +17,12 @@
     "build": "concurrently --success --names tsc,esb -c green.bold,blue.bold tsc yarn:bundle",
     "bundle": "node ./esbuild.config.mjs",
     "clean": "rimraf www/dist",
-    "test": "echo 'TODO'"
+    "release:cut": "yarn version --no-git-tag-version --patch",
+    "postrelease:cut": "git commit -am \"New release: $npm_package_version\"",
+    "release:create": "tar -cvzf release.tgz ./www",
+    "release:wait": "until $(curl --output /dev/null --silent --head --fail $npm_package_repository_url/releases/download/v$npm_package_version/release.tgz); do printf '.' ; sleep 5 ; done",
+    "release:pull": "curl \"$npm_package_repository_url/releases/download/v$npm_package_version/release.tgz\" -sL -o release.tgz; tar -zxvf release.tgz",
+    "deploy": "yarn release:cut && git push && yarn release:wait && ssh root@lbat.ch \"source ~/.zshrc && cd /home/lbatch/sites/$npm_package_name && git pull && yarn release:pull && pm2 restart $npm_package_name\""
   },
   "dependencies": {
     "react": "17.0.2",
