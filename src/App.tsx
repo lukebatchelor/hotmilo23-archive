@@ -94,10 +94,11 @@ export function App() {
         </li>
         <li>
           <a href="/public_html/faces/index.htm">public_html/faces/index.htm</a> - The start of a bunch of small
-          connected sites that I made that all revolved around using my friends faces
+          connected sites that I made that all revolved around using my friends faces. Unfortunately the only game that
+          still sort of works in
         </li>
       </ul>{' '}
-      <p>Still work in progress...</p>
+      <p>There were plenty more apps but a lot of them relied on php functionality which I do not plan on replacing.</p>
     </div>
   );
 }

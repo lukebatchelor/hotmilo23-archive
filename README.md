@@ -1,18 +1,5 @@
-# react-esbuild-starter
+# Hotmilo23.com Archive
 
-Starter template for React and Typescript.
-Inspired by https://github.com/sikanhe/rescript-esbuild-starter
+After finally decomissioning [https://hotmilo23.com](hotmilo23.com) in 2021, I figure nows a good time to back up and archive the parts of it that can still live on without php...
 
-It provides minimal yet 🔥 blazing fast ™ development boilerplate for rapid React prototyping.
-
-- `yarn start` Starts typescript typechecking and esbuild in watch mode, and serves web page at localhost:5000.
-- `yarn build` Builds production bundle for browser, outputs bundle to dist/bundle.js with source map.
-- `yarn clean` Clean up assets produced by esbuild.
-
-All code bundling and transpilation is handled by esbuild. Its configuration is kept inside `esbuild.config.mjs`. Follow [esbuild docs](https://esbuild.github.io/getting-started/) to see all supported options.
-
-### Caveats
-
-- No output file hashing
-- No test runner
-- Importing CSS in JS file is not supported in esbuild yet. It is currently in development https://github.com/evanw/esbuild/issues/20. In meantime either opt-in for some CSS-in-JS solution, or include styles directly in `www/index.html`.
+Could I have made a simple static html file that points to all these files instead of a whole React SPA (without SPA routes)? Yes. Yes I could have
