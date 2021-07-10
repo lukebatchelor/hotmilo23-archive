@@ -1,0 +1,174 @@
+<head>
+	<title>Find the Lost Kitty!</title>
+</head>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="./jquery-ui.js"></script>
+<script src="bPopup.js"></script>
+<script>
+var kittensFound = 0;
+var soundsLoaded = 0;
+var soundsToLoad = 0;
+var playing = false;
+var mouseX;
+var mouseY;
+var kittyX;
+var kittyY;
+var windowWidth;
+var windowHeight;
+var closeEnough = 50; //radius of range you can click on kitten
+var timer;
+var rangeExtender = 1.75; //how much further each souind range will be multiplied by
+//i.e 50->87.5->153.125->267.96->468.94->820.65
+var sounds = ["meow01", "meow02", "meow03", "meow04", "meow05", "meow06", "meow07", "finalMeow"];
+//name of sound files in .mp3 and .ogg formats.
+
+
+
+$( document ).ready(function() {
+  	loadSounds();
+  	moveKitty();
+  	windowWidth = $(window).width();
+	windowHeight = $(window).height();
+  	$(document).mousemove(function(e){
+      		mouseX = e.pageX;
+      		mouseY = e.pageY;
+   	}); 
+   	$(document).click(function(e){
+   		clicked(e.pageX, e.pageY);
+   	}); 
+   	$("#welcome").bPopup({
+		modalClose: false,
+            	speed: 450,
+            	transition: 'slideDown'
+        });
+
+});
+
+function showKittyBox()
+{
+	$("#x").css("visibility", "visible");
+}
+function clicked( x, y)
+{
+	var distance = getDistanceFromKitty(x, y);
+	if(distance < closeEnough && playing)
+		kittyFound();
+}
+
+function playAgain()
+{					
+	playing = true;
+	timer = setInterval('meow()',800);
+	$("#welcome").bPopup().close();	
+	$("#congrats").bPopup().close();	
+	moveKitty();
+}
+
+function meow()
+{	
+	var distance = getDistanceFromKitty(mouseX, mouseY);
+	
+	var soundIdx = sounds.length - 2;
+	var rangeFromKitty = closeEnough;
+	while (distance > rangeFromKitty)
+	{
+		soundIdx--;
+		rangeFromKitty *= rangeExtender;
+	}
+	if(soundIdx < 0)
+		soundIdx = 0;
+
+	$("#"+sounds[soundIdx])[0].play();	
+}
+function getDistanceFromKitty(x, y)
+{
+    	var distance = Math.sqrt( Math.pow((kittyX - x), 2) + Math.pow((kittyY - y), 2));
+    	return distance;
+}
+function moveKitty()
+{
+	kittyX = getRandomInt(20, windowWidth - 20);
+	kittyY = getRandomInt(20, windowHeight - 20);
+	$("#x").css('height', closeEnough*2);
+	$("#x").css('width',  closeEnough*2);
+	$("#x").css('top', kittyY - closeEnough);
+	$("#x").css('left', kittyX - closeEnough);
+}
+function kittyFound()
+{	
+	kittensFound = kittensFound + 1;
+	$("#kittensFound").html("Kittens Found: " + kittensFound);
+	clearInterval(timer);
+	$("#playButton").attr("disabled", false);
+	$("#congrats").css("visibility", "visible");
+	$("#congrats").bPopup({
+		modalClose: false,
+            	speed: 450,
+            	transition: 'slideDown'
+        });	
+        setTimeout("playFinalMeow();$('#foundKitty').effect( 'shake',{ times: 2 },{ distance: 10 }, 'fast')", 1000);
+        playing = false;
+}
+function playFinalMeow()
+{
+       $("#finalMeow")[0].play();
+}
+function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function loadSounds()
+{
+	soundsToLoad = sounds.length;
+	for(var i=0; i < soundsToLoad; i++)
+	{
+		$("#sounds").prepend('\
+			<audio oncanplay="soundReady()" id="'+sounds[i]+'">\
+  				<source src="sounds/'+sounds[i]+'.ogg" type="audio/ogg">\
+  				<source src="sounds/'+sounds[i]+'.mp3" type="audio/mpeg">\
+				Your browser does not support the audio element.\
+			</audio>');
+	}
+}
+function soundReady()
+{
+	soundsLoaded += 1;
+	if(soundsLoaded == soundsToLoad)
+	{
+		$("#playButton").attr("disabled", false);
+		$("#welcomeKitty").click(function() {
+       			$("#welcomeKitty").effect( "shake",{ times: 2 },{ distance: 10 }, "fast");
+       			playFinalMeow();
+       		});
+       		$("#foundKitty").click(function() {
+       			$("#foundKitty").effect( "shake",{ times: 2 },{ distance: 10 }, "fast");
+       			playFinalMeow();
+       		});
+       		
+       		setTimeout("playFinalMeow();$('#welcomeKitty').effect( 'shake',{ times: 2 },{ distance: 10 }, 'fast')", 1000);
+	}		
+}
+</script>
+
+<center>
+	<h1>Find the Lost Kitty </h1>
+	<div id="kittensFound">Kittens found: 0</div><br>
+	<br>
+	<div id="sounds"></div>
+</center>
+
+<div id="welcome" class="modal">
+	<h1>Help!</h1>
+	<div><img id="welcomeKitty" src="images/kitty.png"></div>
+	I've lost all my kittens!<br><br>
+	Can you help me find them?<br><br>
+	<input type="button"  id="playButton" disabled="true" value="Play"  onclick="playAgain();" class="playButton"></input>
+</div>
+<div id="congrats" class="modal" style="visibility: hidden">
+	<h1>Congratulations!</h1>
+	<div><img id="foundKitty" src="images/kitty.png" ;"></div>
+	You found my kitten!<br><br>
+	Can you help me find more?<br><br>
+	<input type="button"  id="playButton2" value="Play"  onclick="playAgain();" class="playButton"></input>
+</div>
+<div id="x" style="position: absolute;  background-color: #ff0000; visibility: hidden"></div>

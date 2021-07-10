@@ -35,10 +35,34 @@ export function App() {
           included an <code>addWord.htm</code> page where users could add missing words to the dictionary (through a php
           script that just appends to a txt file...)
         </li>
+        <li>
+          <a href="/public_html/facefold/index.html">public_html/facefold/index.html</a> - The first iteration of a
+          project I later revisted with <a href="https://facefolding.netlify.com/">facefolding.netlify.com</a>.
+          Unfortunately it doesn't work without the (very shoddy) upload functionality, but you can still see it's
+          successor above!
+        </li>
+        <li>
+          <a href="/public_html/grim/index.htm">public_html/grim/index.htm</a> - This is a very specific inside joke
+          made to make fun of my friend Brett when he said something was grim... But it was also just wet...
+        </li>
+        <li>
+          <a href="/public_html/mcm/index.htm">public_html/mcm/index.htm</a> - This was some sort of calculator that
+          automated some part of my computer science classes. It was never a requirement, I just made it for fun. I
+          believe it's using dynamic programming to calculate some sort of matrix product
+        </li>
+        <li>
+          <a href="/public_html/420/index.htm">public_html/420/index.htm</a> - This was a very tasteful website that
+          told you in which timezone the next 4:20pm was going to occur. It was built with a really dodgily scraped list
+          of timezones from wikipedia...
+        </li>
+        <li>
+          <a href="/public_html/meow/index.html">public_html/meow/index.html</a> - This was a game idea that I cloned
+          years back. The aim of the game is to use sound to find the invisible kitten. The closer you are, the louder
+          they'll be. Yes those meow's are all my voice... I also have no idea what the random javascript string that's
+          ending up in there is from...
+        </li>
       </ul>{' '}
-      <a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-        Learn React
-      </a>
+      <p>Still work in progress...</p>
     </div>
   );
 }

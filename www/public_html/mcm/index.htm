@@ -1,0 +1,220 @@
+<head><title>Matrix Chain Multiplication</title></head>
+
+<style>
+td {
+  width:60px;
+  height:60px;
+  text-align: center;
+}
+</style>
+<script>
+function calc()
+{
+	var str=document.getElementById("input").value;
+	values = str.split(',');
+	if(values.length != 5)
+	{
+		alert("Must enter 5 comma sepertated values");
+	}
+	else
+	{
+		for (var i=0; i<values.length; i++)
+		{
+			if(isNaN(values[i]) || parseInt(values[i]) < 1 )
+			{
+				alert("Invalid value: "+values[i]);
+				return 1;
+			}
+		}
+		var a = values[0]*values[1]*values[2];
+		var c = values[1]*values[2]*values[3];
+		var f = values[2]*values[3]*values[4];
+		var b= Math.min(values[0]*values[1]*values[3]+c,
+			values[0]*values[2]*values[3]+a);
+		var e= Math.min(values[1]*values[2]*values[4]+f,
+			values[1]*values[3]*values[4]+c);
+		var d= Math.min(values[0]*values[1]*values[4]+e,
+			values[0]*values[1]*values[4]+a+f,
+			values[0]*values[1]*values[4]+b);
+			
+		document.getElementById("e").innerHTML=e;
+		document.getElementById("b").innerHTML=b;
+		document.getElementById("f").innerHTML=f;
+		document.getElementById("c").innerHTML=c;
+		document.getElementById("a").innerHTML=a;
+		document.getElementById("d").innerHTML=d;
+		
+		if(values[0]*values[1]*values[4]+e < values[0]*values[1]*values[4]+a+f)
+		{
+			if(values[0]*values[1]*values[4]+e < values[0]*values[1]*values[4]+b)
+				document.getElementById("d2").innerHTML=1;
+			else 
+				document.getElementById("d2").innerHTML=3;
+		}
+		else
+		{
+			if (values[0]*values[1]*values[4]+a+f < values[0]*values[1]*values[4]+b)
+				document.getElementById("d2").innerHTML=2;
+			else
+				document.getElementById("d2").innerHTML=3;
+		}
+		
+		if(values[0]*values[1]*values[3]+c < values[0]*values[2]*values[3]+a)
+			document.getElementById("b2").innerHTML=1;
+		else
+			document.getElementById("b2").innerHTML=2;
+		
+		if(values[1]*values[2]*values[4]+f < values[1]*values[3]*values[4]+c)
+			document.getElementById("e2").innerHTML=2;
+		else
+			document.getElementById("e2").innerHTML=3;
+	}
+	var ans1="A1";
+	var ans2="A2";
+	var ans3="A3";
+	var ans4="A4";
+	
+	if (document.getElementById("d2").innerHTML == 1)
+	{
+		ans2 = "("+ans2;
+		ans4 = ans4+")";
+		if(document.getElementById("d2").innerHTML == 2)
+		{
+			ans2 = ans2+")";
+			ans3 = "("+ans3;
+			ans4 = ans4+")";
+		}
+		else
+		{
+			ans2 = "("+ans2;
+			ans3 = ans3+")";
+		}
+	}
+	else if ( document.getElementById("d2").innerHTML == 2)
+	{
+		ans1 = "("+ans1;
+		ans2 = ans2+")";
+		ans3 = "("+ans3;
+		ans4 = ans4+")";
+	}
+	else
+	{
+		ans1 = "("+ans1;
+		ans3 = ans3+")";
+		if(document.getElementById("d2").innerHTML == 1)
+		{
+			ans2 = "("+ans2;
+			ans3 = ans3+")";
+		}
+		else
+		{
+			ans1 = "("+ans1;
+			ans2 = ans2+")";
+		}
+	}
+	
+	document.getElementById("ans").innerHTML = ans1 + " &#215; " + ans2
+												+ " &#215; " + ans3
+												+ " &#215; " + ans4
+}
+</script>
+<center>
+<h1> Matrix Chain Multiplication </h1>
+
+P-Vector? <<input type="text" value="2,5,3,4,4" size=5 id="input">>
+<br>
+<input type="button" value="Calculate" onClick="calc()">
+<br><br>
+<table>
+<tr>
+<td style="height:20px"><center><b>
+M-Table
+</td><td style="height:20px"><center><b>
+S-Table
+</td></tr>
+<tr>
+<td style="width:50%">
+<table border="1" bordercolor="#FFCC00" style="background-color:#33CC00" cellpadding="3" cellspacing="3">
+	<tr>
+		<td>&nbsp;</td>
+		<td>1</td>
+		<td>2</td>
+		<td>3</td>
+		<td>4</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>0</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td id="a">&nbsp;</td>
+		<td>0</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td id="b">&nbsp;</td>
+		<td id="c">&nbsp;</td>
+		<td>0</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>4</td>
+		<td id="d">&nbsp;</td>
+		<td id="e">&nbsp;</td>
+		<td id="f">&nbsp;</td>
+		<td>0</td>
+	</tr>
+</table>
+
+</td><td style="width:50%">
+
+<table border="1" bordercolor="#FFCC00" style="background-color:#33CC00" cellpadding="3" cellspacing="3">
+	<tr>
+		<td>&nbsp;</td>
+		<td>1</td>
+		<td>2</td>
+		<td>3</td>
+		<td>4</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>0</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td id="a2">1</td>
+		<td>0</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td id="b2">&nbsp;</td>
+		<td id="c2">2</td>
+		<td>0</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>4</td>
+		<td id="d2">&nbsp;</td>
+		<td id="e2">&nbsp;</td>
+		<td id="f2">3</td>
+		<td>0</td>
+	</tr>
+</table>
+</td></tr></table>
+<h1><span id="ans">
+(A1 &#215; A2 &#215; A3 &#215; A4)
+</span>
+</h1>
+
+

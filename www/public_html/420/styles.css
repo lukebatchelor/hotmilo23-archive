@@ -1,0 +1,33 @@
+#content
+{
+	width: 500px;
+	height: 300px;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=79)";
+	filter: alpha(opacity=79);
+	-moz-opacity: 0.79;
+	-khtml-opacity: 0.79;
+	opacity: 0.79;
+	border: 2px #888888 solid;
+
+	background-color: #ffffff;
+
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+
+	-moz-box-shadow: 6px 4px 12px 5px #888888;
+	-webkit-box-shadow: 6px 4px 12px 5px #888888;
+	box-shadow: 6px 4px 12px 5px #888888;
+}
+
+.Absolute-Center {
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
+
+body,html
+{
+   overflow: hidden;
+}

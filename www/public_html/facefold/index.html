@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Facefolding</title>
+  <meta name="description" content="HTML Facefolding app">
+  <meta name="author" content="Hotmilo23">
+
+  <!--<link rel="stylesheet" href="css/styles.css">-->
+	<style>
+		#appCanvas{
+			border: 1px solid;
+		}
+	</style>
+</head>
+
+<body>
+	<center>
+	<canvas id="appCanvas" height="400" width = "400"></canvas><canvas id="outCanvas" style="display: none;"></canvas>
+	<form action="javascript: void(0);" id="upload_form" method="POST" enctype="multipart/form-data">
+		<div id="upload_buttons">
+			<input type="file" name="img" id="img" accept="image/*">
+			<input type="submit" name="upload" value="Upload">
+		</div>
+		<div id="zoom_buttons" style="display: none;">
+			<input type="button" value="Zoom in" onclick="zoom(1)"></input>
+			<input type="button" value="Zoom out" onclick="zoom(-1)"></input>
+		</div>
+		<br>
+		<div id="backNextButtons" style="display: none;">
+			<input type="button" value="Back" onclick="moveStage(-1)"></input>
+			<input type="button" value="Next" onclick="moveStage(1)"></input>
+		</div>
+		<br>
+		<div id="shareButtons" style="display: none;">
+			<input type="button" value="Share!" onclick="share()"></input>
+			<input value="" id="shareURL"></input>
+		</div>
+	</form>
+	<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script src="js/faceFold.js"></script>
+	<script src="js/jgestures.min.js"></script>
+</body>
+</html>
