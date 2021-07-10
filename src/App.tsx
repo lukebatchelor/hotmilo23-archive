@@ -98,7 +98,10 @@ export function App() {
           still sort of works in
         </li>
       </ul>{' '}
-      <p>There were plenty more apps but a lot of them relied on php functionality which I do not plan on replacing.</p>
+      <p>
+        There were plenty more apps but a lot of them relied on php functionality which I do not plan on replacing. This
+        site has served me very well since what must be around 2012/2013
+      </p>
     </div>
   );
 }
