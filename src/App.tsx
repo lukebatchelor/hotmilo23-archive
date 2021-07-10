@@ -58,8 +58,43 @@ export function App() {
         <li>
           <a href="/public_html/meow/index.html">public_html/meow/index.html</a> - This was a game idea that I cloned
           years back. The aim of the game is to use sound to find the invisible kitten. The closer you are, the louder
-          they'll be. Yes those meow's are all my voice... I also have no idea what the random javascript string that's
-          ending up in there is from...
+          they'll be. Yes those meow's are all my voice...
+        </li>
+        <li>
+          <a href="/public_html/python/index.html">public_html/python/index.html</a> - This was a fun little snake game
+          that actually plays quite well. It's built using HTML canvas which was still pretty new at the time. I
+          followed it up with <a href="/public_html/python/ai/index.html">public_html/python/ai/index.html</a> where I
+          apply my newly learned A Star path finding algorithm to have a computer play snake
+        </li>
+        <li>
+          <a href="/public_html/randalyse/index.htm">public_html/randalyse/index.htm</a> - This was a small little
+          microsite that just performs one task. It formats SQL insert statments such that the column names and values
+          all line up nicely... It was named after one of the senior devs at my first job who had a strong preference
+          for this style.
+        </li>
+        <li>
+          <a href="/public_html/random/strike.htm">public_html/random/strike.htm</a> - Little single use site that lets
+          you enter text and then copy that text back with some zero width em-dash's creating a "strikethrough" effect.
+          Probably my single most used app on all of <a href="https://hotmilo23.com">hotmilo23.com</a>. It even has a
+          bookmarket that you can use to call this code from wherever!
+        </li>
+        <li>
+          <a href="/public_html/snow/index.htm">public_html/snow/index.htm</a> - Small Frozen themed game where you
+          collect falling snow. Be careful! Don't catch the yellow snow!! Not sure why the starting instructions don't
+          tell you, but it's enter to start!
+        </li>
+        <li>
+          <a href="/public_html/tghb/index.htm">public_html/tghb/index.htm</a> - This was meant to be some kind of a
+          weird prank I guess? I'd tell people that I've made a new game but that it has a couple of bugs in it. Then
+          I'd send this this game that is just a loading screen... I'm not sure I get it either...
+        </li>
+        <li>
+          <a href="/public_html/whatdothotter/index.htm">public_html/whatdothotter/index.htm</a> - A little site for my
+          friend. A small otter sprit guide gives out random quotes and magic 8 ball responses. Truly marvellous.
+        </li>
+        <li>
+          <a href="/public_html/faces/index.htm">public_html/faces/index.htm</a> - The start of a bunch of small
+          connected sites that I made that all revolved around using my friends faces
         </li>
       </ul>{' '}
       <p>Still work in progress...</p>

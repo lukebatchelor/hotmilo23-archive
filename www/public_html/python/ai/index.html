@@ -1,0 +1,318 @@
+<head>
+<style>
+#canvas
+{
+	border: solid 1px;
+	margin-top: 20px;
+}
+input[type="button"]{
+	width: 30%; 
+}
+</style>
+<script src="jquery.js"></script>
+<script src="keypress-2.1.0.min.js"></script>
+<script src="aStar.js"></script>
+<script src="PythonDraw.js"></script>
+<script src="PythonKeyboard.js"></script>
+<script src="PythonAI.js"></script>
+<script src="PythonItems.js"></script>
+
+<script>
+var FPS = 30;			//constant for Frames Per Second
+var canvas, ctx;
+var pixelSize = 10,		//height and width of snakes body blocks
+	windowHeight, 		//make sure it divide into windowHeight and windowWidth
+	windowWidth,
+	canvasHeight,
+	canvasWidth;
+var playing = false;
+	playingState = 0;	//0-start screen, 1-playing game, 2-paused, 3-game over
+var snake;
+var score, highScore = 0;
+var invincible = false;
+var partyOn = false;
+var debug = false;
+var timer;
+var newHighscore;
+var gameClock;
+var loop = false;
+var stalePathMax = 10,
+	stalePathCount;
+
+$( document ).ready(function() {
+	windowHeight = $(window).height(); 
+	windowWidth = $(window).width();
+	canvas = $('#canvas')[0];
+	canvasWidth = canvas.width;
+	canvasHeight = canvas.height;
+	ctx = canvas.getContext("2d");
+	addKeyboardListeners();
+	
+	gameClock = setInterval(function() {
+		gameLoop();
+	}, 1000/FPS);
+});
+
+function Timer(){
+	this.start = Date.now();
+	this.lapTime = "00:00";
+	this.getTimeString = function(){
+		var now = Date.now();
+		var totalSecs = (now - this.start)/1000;
+		var minutes = Math.floor(totalSecs/60);
+		var seconds = Math.floor(totalSecs%60);
+		return (minutes<10?"0":"")+minutes+":"+(seconds<10?"0":"")+seconds;
+	}
+	this.getMinutes = function(){
+		
+		console.log(passed);
+	}
+	this.getSeconds = function(){
+		var now = Date.now();
+		var passed = Math.floor((now - this.start)/1000/60);
+		console.log(passed);
+	}
+	this.lap = function(){
+		this.lapTime = this.getTimeString();
+	}
+	
+	this.restart = function(){
+		this.start = Date.now();
+	}
+}
+function gameLoop(){
+	update();
+	draw();
+	if(playing){
+		if(auto_pilot){
+			if(path.length == 0){
+				setPath();
+			}
+			snake.dir = path[0];
+			if(debug){
+				console.log("moving dir", snake.dir, path, "from (", snake.body[0], ", ", snake.body[1], ")");
+			}
+			path.shift();
+		}
+	}
+}
+
+
+
+function update(){
+	if(playing)
+	{
+		var xDirs = [0, 1, 0, -1],
+			yDirs = [-1, 0, 1, 0];
+		var dx = xDirs[snake.dir],
+			dy = yDirs[snake.dir];
+		
+		snake.body.pop(); 	// remove the last body part
+		snake.body.pop();
+		snake.body.unshift(snake.body[0] + dx, snake.body[1] + dy);	//add it to the beginning with the new position
+		
+		stalePathCount -= 1;
+		if(stalePathCount == 0){
+			path = [];
+		}
+		
+		if(!invincible){
+			//check if snake moving out of canvas
+			if( (snake.body[0]+1) * pixelSize > canvasWidth  ||	//right edge
+				(snake.body[0]) < 0							  ||	//left edge
+				(snake.body[1]+1) * pixelSize > canvasHeight ||	//bottom edge
+				(snake.body[1]) < 0 ){								//top edge
+					die();
+					console.log("hit wall");
+			}
+
+			//check if snake is hitting itself
+			for(var i = 1; i < snake.length; i++)
+			{
+				if(snake.body[0] == snake.body[i*2] && snake.body[1] == snake.body[i*2+1]){
+					die()
+					console.log("ate yourself");
+				}
+			}
+		}
+		//check if snake is collecting an item
+		//also update item lifes
+		//looping backwards to allow removal of elements
+		for(var i = items.length - 1; i > -1; i--){
+			if(snake.body[0] == items[i].x && snake.body[1] == items[i].y){
+				collectItem(items[i].name, i);
+			}
+			else{
+				items[i].life--;
+				if(items[i].life <= 0){
+					itemDie(i);		//remove the item
+				}
+			}
+		}
+	}
+}
+
+
+function Snake(){
+	function link(x, y){
+		this.x = x;
+		this. y = y;
+		return this;
+	}
+	this.body = [2, 0, 1, 0, 0, 0]; //(2,0), (1, 0), (0, 0)
+	this.dir = 1;	//0 - up, 1 - right, 2-down, 3-left
+	this.length = this.body.length / 2;
+	this.grow = function(){
+		snake.body.push(snake.body[snake.length*2-2]); //copy x-coord of last body part 
+		snake.body.push(snake.body[snake.length*2-1]); //copy y-coord of last body part 
+		snake.length++;
+	};
+	this.bodyContains = function(x, y){
+		var contains = false;
+		for(var i=0; i < this.length; i++)
+		{
+			if((this.body[i*2] == x) && (this.body[i*2+1] == y)){
+				contains = true;
+			}
+		}
+		return contains;
+	};
+	return this;
+}
+
+
+function restartGame()
+{
+	playing = true;
+	playingState = 1;
+	snake = new Snake();
+	score = 0;
+	items = [];
+	path = [];
+	path_calculated = false;
+	dropItem("apple");
+	floatTexts = [];
+	timer = new Timer();
+}
+
+function die(){
+	playing = false;
+	playingState = 3;
+	invincible = false;
+	timer.lap();
+	console.log("Final Score", score);
+	if(score > highScore){
+		highScore = score;
+		newHighScore = true;
+	}
+	else{
+		newHighScore = false;
+	}
+	if(loop){
+		restartGame();
+	}
+}
+
+
+function playButtonPressed(){
+	if(playing){
+		playingState = 2;
+		playing = false;
+	}
+	else{
+		if((playingState == 0) || (playingState == 3)){
+			restartGame();
+		}
+		else{				//game is paused, unpause
+			playingState = 1;
+			playing = true;
+		}
+	}
+}
+function debugButtonPressed(){
+	debug = !debug;
+	$("#debug ").attr("value", "DEBUG : "+(debug?"on":"off"));
+}
+function godmodeButtonPressed(){
+	invincible = !invincible;
+	$("#god").attr("value", "GOD: "+(invincible?"on":"off"));
+}
+function toggleSpeedButtonPressed(){
+	FPS = (FPS==10)?(20):((FPS==20)?(30):(FPS==30)?(40):(FPS==40)?(50):(FPS==50)?(90):(FPS==90)?(120):(FPS==120)?(170):(FPS==170)?(250):(FPS==250)?(1000):10);
+	clearInterval(gameClock);
+        gameClock = setInterval(function() {
+		gameLoop();
+	}, 1000/FPS);
+	$("#speed").attr("value", "Speed: "+(FPS/10));
+}
+function partyButtonPressed(){
+	partyOn = !partyOn;
+	$("#party").attr("value", "Party: "+(partyOn?"on":"off"));
+}
+
+function growButtonPressed(times){
+	for(var i=0; i < times; i++){
+		snake.grow();
+	}
+}
+function shrinkButtonPressed(times){
+	for(var i=0; i < times<snake.body.length/2?times:snake.body.length/2 - 1; i++){
+		snake.body.pop();
+		snake.body.pop();
+	}
+}
+function restartButtonPressed(){
+	restartGame();
+}
+function autoplayButtonPressed(){
+	auto_pilot = !auto_pilot;
+	if(auto_pilot){
+		$("#loop").removeAttr('disabled')
+	}
+	else{
+		$("#loop").attr('disabled','disabled');
+		$("#loop").attr("value", "Loop: off");
+		loop = false;
+		path = [];
+		path_calculated = false;
+	}
+	$("#autplay").attr("value", "Autoplay: "+(auto_pilot?"on":"off"));
+}
+
+function replanButtonPressed(){
+	stalePathMax = (stalePathMax==1)?(5):(stalePathMax==5)?(10):(stalePathMax==10)?(15):1;
+	$("#replan").attr("value", "Replan: "+(stalePathMax));
+}
+
+function loopButtonPressed(){
+	loop = !loop;
+	$("#loop").attr("value", "Loop: "+(loop?"on":"off"));
+}
+
+</script>
+</head>
+<body>
+<center>
+<h1 style="margin: 0px;">Python</h1>
+Because we want to avoid copyright issues
+<br>
+<canvas id="canvas" width="300" height="400"></canvas><br>
+<div id="buttons" style="width:300">
+	<input type="button" value="ENTER" onclick="playButtonPressed()"></input>
+	<input type="button" value="DEBUG: off" onclick="debugButtonPressed()" id="debug"></input>
+	<input type="button" value="GOD: off" onclick="godmodeButtonPressed()" id="god"></input><br>
+	<input type="button" value="Party: off" onclick="partyButtonPressed()" id="party"></input>
+	<input type="button" value="Speed: 3" onclick="toggleSpeedButtonPressed()" id="speed"></input>
+	<input type="button" value="Restart" onclick="restartButtonPressed()"></input><br>
+	<input type="button" value="<Grow>" onclick="growButtonPressed(10)"></input>
+	<input type="button" value="<<Grow>>" onclick="growButtonPressed(50)"></input>
+	<input type="button" value="<<<Grow>>>" onclick="growButtonPressed(100)"></input><br>
+	<input type="button" value="Replan: 10" onclick="replanButtonPressed()" id="replan"></input>
+	<input type="button" value="Autoplay: on" onclick="autoplayButtonPressed()" id="autplay"></input>
+	<input type="button" value="Loop: off" onclick="loopButtonPressed()" id="loop"></input><br>
+<!--	<input type="button" value="<Shrink>" onclick="shrinkButtonPressed(1)"></input>
+	<input type="button" value="<<Shrink>>" onclick="shrinkButtonPressed(50)"></input>
+	<input type="button" value="<<<Shrink>>>" onclick="shrinkButtonPressed(100)"></input><br>-->
+</div>
+</center>
+</body>

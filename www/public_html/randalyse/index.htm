@@ -1,0 +1,31 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Randalyse Tool</title>
+  <meta name="description" content="A tool to Randalyse SQL insert statements">
+  <meta name="author" content="Luke Batchelor">
+
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="randalyse.js"></script>
+
+</head>
+
+<body>
+  <center>
+  	<h1>
+  		Randalyse Tool
+  	</h1>
+  	<br>
+  	<textarea rows ="5" class="inputs" id="sql-input" wrap="off" placeholder="INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country) VALUES ('Cardinal','Tom B. Erichsen','Skagen 21','Stavanger','4006','Norway');" ></textarea>
+	<br><br>
+	<a href="#" class="Randal-Button" id="swag">Randalyse Me!</a>
+	<br><br>
+	<textarea rows ="5" class="inputs" id="outputBox" wrap="off"></textarea>
+  </center>
+</body>
+</html>

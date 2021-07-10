@@ -1,0 +1,462 @@
+<head>
+<style>
+#canvas
+{
+	border: solid 1px;
+	margin-top: 20px;
+}
+
+</style>
+<script src="jquery.js"></script>
+<script src="keypress-2.1.0.min.js"></script>
+
+<script>
+var FPS = 30;			//constant for Frames Per Second
+var canvas, ctx;
+var snakeSize = 10,		//height and width of snakes body blocks
+	windowHeight, 		//make sure it divide into windowHeight and windowWidth
+	windowWidth,
+	canvasHeight,
+	canvasWidth;
+var playing = false;
+	playingState = 0;	//0-start screen, 1-playing game, 2-paused
+var snake, 
+	items;
+var score, highScore;
+var comboListener;
+var invincible = false;
+	
+$( document ).ready(function() {
+	windowHeight = $(window).height(); 
+	windowWidth = $(window).width();
+	canvas = $('#canvas')[0];
+	canvasWidth = canvas.width;
+	canvasHeight = canvas.height;
+	ctx = canvas.getContext("2d");
+	if(localStorage.getItem('highScore') != null){
+		highScore = localStorage.getItem('highScore')
+	}
+	else{
+		highScore = 0;
+	}
+	addKeyboardListeners();
+	
+	setInterval(function() {
+		gameLoop();
+	}, 1000/FPS);
+	comboListener = new window.keypress.Listener()
+	comboListener.sequence_combo("up up down down left right left right b a enter", function() {
+		if(playingState == 2){ //game is paused
+			invincible = !invincible;	//make the player invisble
+			playingState = 1;	//and start the game
+			playing = true;
+		}
+	}, true);
+	comboListener.sequence_combo("s t e r o i d s enter", function() {
+		if(playingState == 2){ //game is paused
+			for(var i=0; i < 30; i++){
+				snake.grow();
+			}
+			playingState = 1;	//and start the game
+			playing = true;
+		}
+	}, true);
+	comboListener.sequence_combo("e n t e r h e l l enter", function() {
+		if(playingState == 2){ //game is paused
+			for(var i=0; i < 50; i++){
+				snake.grow();
+			}
+			playingState = 1;	//and start the game
+			playing = true;
+		}
+	}, true);
+		comboListener.sequence_combo("o h s h i t enter", function() {
+		if(playingState == 2){ //game is paused
+			for(var i=0; i < 100; i++){
+				snake.grow();
+			}
+			playingState = 1;	//and start the game
+			playing = true;
+		}
+	}, true);
+	
+});
+
+
+function gameLoop(){
+	update();
+	draw();
+}
+
+function update(){
+	if(playing)
+	{
+		var dx = 0, dy = 0;
+		switch(snake.dir){
+			case 0:			//up
+				dy = -1;
+				break;
+			case 1:			//right
+				dx = 1;
+				break;
+			case 2:			//down
+				dy = 1;
+				break;
+			case 3:			//left
+				dx = -1;
+				break;
+		}
+		snake.body.pop(); 	// remove the last body part
+		snake.body.pop();
+		snake.body.unshift(snake.body[0] + dx, snake.body[1] + dy);	//add it to the beginning with the new position
+		
+		if(!invincible){
+			//check if snake moving out of canvas
+			if( (snake.body[0]+1) * snake.size > canvasWidth  ||	//right edge
+				(snake.body[0]) < 0							  ||	//left edge
+				(snake.body[1]+1) * snake.size > canvasHeight ||	//bottom edge
+				(snake.body[1]) < 0 ){								//top edge
+					die()
+			}
+
+			//check if snake is hitting itself
+			for(var i = 1; i < snake.length; i++)
+			{
+				if(snake.body[0] == snake.body[i*2] && snake.body[1] == snake.body[i*2+1]){
+					die()
+				}
+			}
+		}
+		//check if snake is collecting an item
+		//also update item lifes
+		//looping backwards to allow removal of elements
+		for(var i = items.length - 1; i > -1; i--){
+			if(snake.body[0] == items[i].x && snake.body[1] == items[i].y){
+				collectItem(items[i].name, i);
+			}
+			else{
+				items[i].life--;
+				if(items[i].life <= 0){
+					itemDie(i);		//remove the item
+				}
+			}
+		}
+	}
+}
+
+function draw(){
+	ctx.fillStyle="#EFEFEF";
+	ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+	if(playing){
+		drawSnake();
+		drawItems();
+		drawScore();
+	}
+	else{
+		if(playingState == 0){
+			drawStartMessage();
+			drawScore();
+		}
+		else{
+			drawPausedMenu();
+		}
+	}
+}
+
+function drawSnake(){
+	ctx.fillStyle = "#FF0000";
+	for(var i=0; i < snake.length; i++)
+	{
+		if(!invincible){
+			ctx.fillRect(snake.body[i*2] * snake.size, snake.body[i*2+1] * snake.size, snake.size, snake.size);
+		}
+		else{
+			ctx.fillStyle = getRandomColor();
+			ctx.fillRect(snake.body[i*2] * snake.size, snake.body[i*2+1] * snake.size, snake.size, snake.size);
+		}
+	}
+}
+
+function drawItems(){
+	for(var i=0; i < items.length; i++){
+		ctx.fillStyle = items[i].col;
+		ctx.fillRect(items[i].x * snakeSize, items[i].y * snakeSize, snakeSize, snakeSize);
+	}
+}
+
+function drawScore(){
+	ctx.textAlign = 'right';
+	ctx.fillStyle="#000000";
+	ctx.font = '18pt Calibri';
+	if(playing){
+		ctx.fillText( "Score: "+(("0000"+score).slice(-4)), canvasWidth - 10, 20);
+	}
+	else{
+		ctx.fillText( "High Score: "+(("0000"+highScore).slice(-4)), canvasWidth - 10, 20);
+	}
+}
+function drawStartMessage(){
+	ctx.textAlign = 'center';
+	ctx.fillStyle="#000000";
+	ctx.font = '22pt Calibri';
+	var x = canvasWidth / 2;
+	var y = canvasHeight / 3;
+	ctx.fillText("Press space to start!", x, y);
+
+	//draw item descriptiona
+	ctx.font = '12pt Calibri';
+	ctx.textAlign = 'left';
+	ctx.fillText("+1   score, snake grows a little", x/3 + snakeSize*1.5, y + 59);
+	ctx.fillText("+5   score", x/3 + snakeSize*1.5, y + 79);
+	ctx.fillText("+10 score, snake grows a lot", x/3 + snakeSize*1.5, y + 99);
+	ctx.fillText("+35 score, snake grows A LOT", x/3 + snakeSize*1.5, y + 119);
+	ctx.fillText("You'll see...", x/3 + snakeSize*1.5, y + 139);
+	
+	//draw items
+	ctx.fillStyle="#00FF00";
+	ctx.fillRect(x/3, y + 50, snakeSize, snakeSize);
+	ctx.fillStyle="#FF0000";
+	ctx.fillRect(x/3, y + 70, snakeSize, snakeSize);
+	ctx.fillStyle="#996600";
+	ctx.fillRect(x/3, y + 90, snakeSize, snakeSize);
+	ctx.fillStyle="#FFFFFF";
+	ctx.fillRect(x/3, y + 110, snakeSize, snakeSize);
+	ctx.fillStyle="#FFD700";
+	ctx.fillRect(x/3, y + 130, snakeSize, snakeSize);
+}
+
+function drawPausedMenu(){
+	ctx.textAlign = 'center';
+	ctx.fillStyle="#000000";
+	ctx.font = '22pt Calibri';
+	var x = canvasWidth / 2;
+	var y = canvasHeight / 2;
+	ctx.fillText("Paused!", x, y);
+}
+function Snake(snakeSize){
+	function link(x, y){
+		this.x = x;
+		this. y = y;
+		return this;
+	}
+	this.body = [2, 0, 1, 0, 0, 0]; //(2,0), (1, 0), (0, 0)
+	this.dir = 1;	//0 - up, 1 - right, 2-down, 3-left
+	this.length = this.body.length / 2;
+	this.size = snakeSize;
+	this.grow = function(){
+		snake.body.push(snake.body[snake.length*2-2]); //copy x-coord of last body part 
+		snake.body.push(snake.body[snake.length*2-1]); //copy y-coord of last body part 
+		snake.length++;
+	}
+	return this;
+}
+
+function Item(name, x, y){
+	this.x = x;
+	this.y = y;
+	this.name = name;
+	switch(name){
+		case "apple":
+			this.col = "#00FF00";	//green
+			this.life = 150;
+			break;
+		case "cherry":
+			this.col = "#FF0000";	//red
+			this.life = 150;
+			break;
+		case "chocolate":
+			this.col = "#996600";	//brown
+			this.life = 100;
+			break;
+		case "icecream":
+			this.col = "#FFFFFF";	//white
+			this.life = 100;
+			break;
+		case "party":
+			this.col = "#FFD700";	//gold
+			this.life = 100;
+			break;
+		default:
+			this.col = "#00FF00";	//green
+			break;
+	}
+}
+
+function addKeyboardListeners(){
+	$(document).keydown(function(e){
+		if(playing)
+		{
+			switch(e.keyCode){
+				case 65: //left (a)
+				case 37:
+					if(snake.dir != 1)
+						snake.dir = 3;
+					break;
+				case 68: //right (d)
+				case 39:
+					if(snake.dir != 3)
+						snake.dir = 1;
+					break;
+				case 87: //up (w)
+				case 38:
+					if(snake.dir != 2)
+						snake.dir = 0;
+					break; 
+				case 83: //down (s)
+				case 40:
+					if(snake.dir != 0)
+						snake.dir = 2;
+					break;
+				case 32: //<enter> (space)
+				case 13:
+					playingState = 2;
+					playing = false;
+					break;
+			}
+			e.preventDefault();
+		}
+		else{
+			switch(e.keyCode){
+				case 65: //left (a)
+				case 37:
+
+					break;
+				case 68: //right (d)
+				case 39:
+
+					break;
+				case 87: //up (w)
+				case 38:
+
+					break; 
+				case 83: //down (s)
+				case 40:
+
+					break;
+				case 32: //<enter> (space)
+				case 13: //start the game!
+					if(playingState == 0){
+						restartGame();
+					}
+					else{				//game is paused, unpause
+						playingState = 1;
+						playing = true;
+					}
+					break;
+				}
+			//console.log(e.keyCode);
+		}
+	});
+	
+}
+
+function collectItem(itemName, itemIdx){
+	items.splice(itemIdx, 1);
+	switch(itemName){
+		case "apple":	//+1 score and create new apple
+			score++;
+			addItem("apple")
+			snake.grow();
+			break;
+		case "cherry":	//+5 score, dont grow snake
+			score = score + 5;
+			break;
+		case "chocolate": //+10 points but grow three times!
+			score = score + 10
+			snake.grow();
+			snake.grow();
+			snake.grow();
+			break;
+		case "icecream": //+35 points but grow three times!
+			score = score + 35
+			for(var i=0; i < 10; i++){
+				snake.grow();
+			}
+			break;
+		case "party":	//+60 score, grow by 20, add 20 random cherrys
+			score = score + 60;
+			for(var i=0; i < 20; i++){
+				snake.grow();
+				addItem("cherry");
+			}
+			break;
+	}
+}
+
+function addItem(itemName){
+	items.push(new Item(itemName, randomAlong(canvasWidth, snakeSize), randomAlong(canvasHeight, snakeSize)));
+	if(randomInclusive(0, 3) == 0){
+		items.push(new Item("cherry", randomAlong(canvasWidth, snakeSize), randomAlong(canvasHeight, snakeSize)));
+	}
+	else if(randomInclusive(0, 3) == 0){
+		items.push(new Item("chocolate", randomAlong(canvasWidth, snakeSize), randomAlong(canvasHeight, snakeSize)));
+	}
+	else{
+		if(randomInclusive(0, 3) == 0){
+			items.push(new Item("icecream", randomAlong(canvasWidth, snakeSize), randomAlong(canvasHeight, snakeSize)));
+		}
+		else{
+			if(randomInclusive(0, 3) == 0){
+				items.push(new Item("party", randomAlong(canvasWidth, snakeSize), randomAlong(canvasHeight, snakeSize)));
+			}
+		}
+	}
+}
+
+function itemDie(itemIdx){
+	if(items[itemIdx].name == "apple"){
+		addItem("apple");
+	}
+	items.splice(itemIdx, 1)
+}
+
+function restartGame()
+{
+	playing = true;
+	playingState = 1;
+	snake = new Snake(snakeSize);
+	score = 0;
+	items = [];
+	addItem("apple");
+}
+
+function die(){
+	playing = false;
+	playingState = 0;
+	invincible = false;
+	if(score > highScore){
+		highScore = score;
+		localStorage.setItem('highScore', highScore);
+	}
+}
+
+//return random position along an axis
+function randomAlong(axisLength, snakeSize){
+	var max = Math.floor(axisLength / snakeSize) - 1;
+	var min = 0;
+	return randomInclusive(min, max);
+}
+
+//return a random number between min and max inclusive
+function randomInclusive(min, max){
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+</script>
+</head>
+<body>
+<center>
+<h1 style="margin: 0px;">Python</h1>
+Because we want to avoid copyright issues
+<br>
+<canvas id="canvas" width="300" height="400"></canvas><br>
+</center>
+</body>

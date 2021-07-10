@@ -1,0 +1,18 @@
+<script>
+function strike()
+{
+    var string = window.prompt("Text to strike-through", "Strike me down!");
+    var s = "\u0336";
+    var out =s;
+    for(var i=0; i<string.length; i++)
+    {
+        out+=string.charAt(i)+s;
+    }
+    window.prompt("CTR+C the text below", out);
+} 
+</script>
+<body onload="strike()">
+<center>
+<input type="button" onclick="strike()" value="Strike again">
+<br><br>
+Drag <a href='javascript: var string = window.prompt("Text to strike-through", "Strike me down!"); var s = "\u0336"; var out =s; for(var i=0; i<string.length; i++) { out+=string.charAt(i)+s; } window.prompt("CTR+C the text below", out);'> this </a>to your toolbar

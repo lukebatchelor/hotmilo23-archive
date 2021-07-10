@@ -1,0 +1,13 @@
+
+ .container
+ {
+ 	margin-top: 10px;
+ 	margin-bottom: 10px;
+ 	
+ }
+ .my-box
+ {
+ 	padding-top: 0px;
+ 	margin-bottom: 0px;
+ 	border: 1px solid;
+ }
