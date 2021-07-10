@@ -1,0 +1,17 @@
+.button {
+  width:40px;
+  text-align:center
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px;
+  text-decoration: none;
+  -webkit-border-radius: 16px;
+  -moz-border-radius: 16px;
+  -webkit-box-shadow: 4px 4px 11px #666666;
+  -moz-box-shadow: 4px 4px 11px #666666;
+  text-shadow: 1px 1px 3px #666666;
+  border: solid #676869 2px;
+  background: -webkit-gradient(linear, 0 0, 0 100%, from(#96999c), to(#7b7d80));
+  background: -moz-linear-gradient(top, #96999c, #7b7d80);
+}
